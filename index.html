@@ -558,6 +558,26 @@ function restart(){
 }
 
 render();
+
+/* =========================================================
+   IFRAME AUTO-RESIZE
+   Reports content height to a parent window (e.g. a Wix page
+   embedding this app in an iframe) so the embed can be resized
+   to fit instead of using a fixed height. No-op when not framed.
+   ========================================================= */
+(function(){
+  if (window.parent === window) return;
+  function postHeight(){
+    window.parent.postMessage({ type: 'core-values-compass:resize', height: document.documentElement.scrollHeight }, '*');
+  }
+  if ('ResizeObserver' in window){
+    new ResizeObserver(postHeight).observe(document.body);
+  }
+  window.addEventListener('load', postHeight);
+  window.addEventListener('resize', postHeight);
+  if (document.fonts && document.fonts.ready){ document.fonts.ready.then(postHeight); }
+  postHeight();
+})();
 </script>
 </body>
 </html>
