@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Core Values Compass</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #FAF6EE;
+    --ink: #2B2822;
+    --ink-strong: #26231D;
+    --muted: #736A5B;
+    --muted-2: #8C8271;
+    --line: #E3D9C4;
+    --line-soft: #EDE6D6;
+    --brass: #C9982F;
+    --brass-strong: #A6792E;
+    --white: #FFFFFF;
+    --white-warm: #FFFEFB;
+    --error: #B0562F;
+    --footer: #C4BBA5;
+  }
+  *{ box-sizing: border-box; }
+  html,body{ margin:0; padding:0; }
+  body{
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'IBM Plex Sans', -apple-system, sans-serif;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  a{ color: var(--brass-strong); }
+  a:hover{ color: #6E5424; }
+  .display{ font-family: 'Fraunces', Georgia, serif; }
+  button{ font-family: inherit; }
+  button:focus-visible, .chip:focus-visible, input:focus-visible{
+    outline: 2px solid var(--brass);
+    outline-offset: 2px;
+  }
+
+  #app{ max-width: 640px; margin: 0 auto; padding: 32px 22px 72px; min-height: 100vh; }
+
+  /* topbar */
+  .topbar{ display:flex; align-items:center; justify-content:space-between; margin-bottom: 38px; }
+  .brandmark{ font-size:12px; letter-spacing:0.14em; color: var(--muted-2); text-transform:uppercase; font-weight:600; }
+  .steps{ display:flex; gap:6px; }
+  .step-tick{ width:22px; height:3px; border-radius:2px; transition: background .3s ease; }
+
+  /* generic */
+  .eyebrow{ font-size:12px; text-transform:uppercase; letter-spacing:0.14em; color: var(--brass-strong); margin:0 0 10px; font-weight:600; }
+  h1{ font-size:32px; font-weight:600; margin:0 0 14px; line-height:1.2; color: var(--ink-strong); }
+  h2{ font-size:23px; font-weight:600; margin:0 0 10px; line-height:1.25; color: var(--ink-strong); }
+  p.lead{ color: var(--muted); font-size:15.5px; margin:0 0 30px; max-width:52ch; }
+
+  .btn{
+    display:inline-flex; align-items:center; gap:8px;
+    background: var(--brass); color: var(--white); border:none;
+    font-weight:600; font-size:15px; padding:13px 24px; border-radius:8px; cursor:pointer;
+    transition: transform .15s ease, opacity .15s ease;
+  }
+  .btn:hover:not(:disabled){ transform: translateY(-1px); }
+  .btn:disabled{ opacity:0.4; cursor:not-allowed; transform:none; }
+  .btn-ghost{ background:transparent; color: var(--muted-2); border:1px solid var(--line); font-weight:500; padding:13px 22px; border-radius:8px; cursor:pointer; }
+  .btn-text{ background:none; border:none; color: var(--muted-2); font-size:14px; padding:8px 0; cursor:pointer; }
+  .row-between{ display:flex; align-items:center; justify-content:space-between; gap:16px; }
+
+  /* intro */
+  .intro-list{ list-style:none; padding:0; margin:0 0 34px; display:flex; flex-direction:column; gap:15px; }
+  .intro-list li{ display:flex; gap:14px; align-items:flex-start; font-size:14.5px; }
+  .intro-num{
+    font-size:12px; font-weight:600; color: var(--brass-strong);
+    border:1px solid var(--line); border-radius:50%; width:26px; height:26px;
+    display:flex; align-items:center; justify-content:center; flex-shrink:0; background: var(--white-warm);
+  }
+
+  /* select */
+  .search-input{
+    width:100%; background: var(--white); border:1px solid var(--line); color: var(--ink);
+    padding:11px 14px; border-radius:8px; font-size:14px; margin-bottom:18px; box-sizing:border-box;
+  }
+  .search-input::placeholder{ color: var(--muted-2); }
+  .counter{ font-size:13px; color: var(--muted-2); margin-bottom:18px; }
+  .counter strong{ color: var(--brass-strong); font-weight:600; }
+  .chip-grid{ display:flex; flex-wrap:wrap; gap:9px; margin-bottom:30px; }
+  .chip{
+    background: var(--white); border:1px solid var(--line); color: var(--ink);
+    padding:9px 15px; border-radius:999px; font-size:13.5px; cursor:pointer; transition: all .15s ease;
+  }
+  .chip.selected{ background: rgba(201,152,47,0.14); border-color: var(--brass); color: var(--brass-strong); }
+  .chip.disabled-add{ opacity:0.4; }
+  .sticky-footer{
+    position: sticky; bottom:0; background: linear-gradient(to top, var(--bg) 60%, transparent);
+    padding:18px 0 4px; margin-top:-10px;
+  }
+
+  /* wheel + legend */
+  .wheel-wrap{ display:flex; justify-content:center; margin:8px 0 30px; }
+  .legend{ display:flex; flex-direction:column; gap:14px; margin-bottom:32px; }
+  .legend-head{ display:flex; align-items:center; gap:9px; margin-bottom:6px; }
+  .legend-dot{ width:10px; height:10px; border-radius:3px; flex-shrink:0; }
+  .legend-name{ font-size:14px; font-weight:600; letter-spacing:0.01em; }
+  .legend-stat{ margin-left:auto; font-size:12.5px; color: var(--muted-2); }
+  .legend-bar-track{ height:6px; background: var(--line-soft); border-radius:3px; overflow:hidden; }
+  .legend-bar-fill{ height:100%; border-radius:3px; transition: width .5s ease; }
+  .legend-words{ font-size:12.5px; color: var(--muted-2); margin-top:6px; }
+
+  /* compare */
+  .compare-progress{ font-size:12.5px; color: var(--muted-2); margin-bottom:10px; }
+  .compare-q{ margin:0 0 22px; }
+  .vs-wrap{ display:flex; flex-direction:column; gap:14px; }
+  .vs-card{
+    flex:1; background: var(--white); border:1px solid var(--line); border-top:3px solid var(--card-color, var(--brass));
+    border-radius:12px; padding:22px; text-align:left; cursor:pointer; transition: transform .15s ease;
+  }
+  .vs-card-name{ font-family:'Fraunces',serif; font-size:19px; font-weight:600; margin-bottom:10px; color: var(--ink-strong); }
+  .vs-card-words{ font-size:13px; color: var(--muted); line-height:1.6; }
+  .vs-divider{ display:flex; align-items:center; justify-content:center; font-size:11px; color: var(--muted-2); text-transform:uppercase; letter-spacing:0.1em; }
+
+  /* results */
+  .rank-list{ list-style:none; padding:0; margin:0 0 30px; display:flex; flex-direction:column; gap:10px; }
+  .rank-row{ display:flex; align-items:center; gap:14px; background: var(--white); border:1px solid var(--line); border-radius:10px; padding:14px 16px; }
+  .rank-num{ font-family:'Fraunces',serif; font-weight:600; font-size:20px; color: var(--rank-color, var(--brass)); width:24px; text-align:center; flex-shrink:0; }
+  .rank-name{ font-weight:600; font-size:14.5px; letter-spacing:0.01em; }
+  .rank-sub{ font-size:11.5px; color: var(--muted-2); margin-top:2px; }
+
+  .insight-box{ background: var(--white); border-left:3px solid var(--brass); border-radius:6px; padding:18px 20px; font-size:14px; margin-bottom:34px; }
+  .insight-box .eyebrow{ margin-bottom:8px; }
+
+  .email-card{ background: var(--white); border:1px solid var(--line); border-radius:14px; padding:26px; }
+  .field{ margin-bottom:14px; }
+  .field label{ display:block; font-size:12.5px; color: var(--muted-2); margin-bottom:6px; }
+  .field input{ width:100%; background: var(--bg); border:1px solid var(--line); color: var(--ink); padding:11px 13px; border-radius:7px; font-size:14px; box-sizing:border-box; }
+  .checkbox-row{ display:flex; align-items:flex-start; gap:10px; margin:16px 0 6px; }
+  .checkbox-row input{ margin-top:3px; }
+  .checkbox-row label{ font-size:12.5px; color: var(--muted-2); line-height:1.5; }
+  .form-error{ color: var(--error); font-size:12.5px; margin:6px 0 14px; }
+  .confirm-box{ text-align:center; padding:10px 0; }
+  .confirm-box .display{ font-size:20px; margin-bottom:8px; color: var(--ink-strong); }
+  .confirm-box p{ color: var(--muted); font-size:13.5px; margin:0; }
+
+  .footer-credit{ text-align:center; margin-top:44px; font-size:11px; color: var(--footer); letter-spacing:0.08em; text-transform:uppercase; }
+
+  @media (prefers-reduced-motion: reduce){ *{ transition: none !important; } }
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+/* =========================================================
+   DATA
+   ========================================================= */
+const CATEGORY_META = {
+  'CONNECTION':        { color: 'oklch(0.62 0.10 35)',  total: 10 },
+  'GROWTH':            { color: 'oklch(0.58 0.09 150)', total: 16 },
+  'CHARACTER':         { color: 'oklch(0.55 0.07 250)', total: 12 },
+  'WELL-BEING':        { color: 'oklch(0.58 0.08 320)', total: 14 },
+  'PURPOSE & IMPACT':  { color: 'oklch(0.68 0.12 85)',  total: 8 },
+};
+const CATEGORY_ORDER = ['CONNECTION','GROWTH','CHARACTER','WELL-BEING','PURPOSE & IMPACT'];
+
+const VALUES = [
+  ...['Close Relationships','Community','Cooperation','Customer Service','Friendships','Involvement','Loyalty','Quality Relationships','Teamwork','Working with Others']
+    .map(label => ({ label, cat: 'CONNECTION' })),
+  ...['Achievement','Advancement/Promotion','Adventure','Challenging Problems','Change and Variety','Competence','Competition','Creativity','Excellence','Expertise','Knowledge','Persistence','Personal Development','Physical Challenge','Wisdom','Working Under Pressure']
+    .map(label => ({ label, cat: 'GROWTH' })),
+  ...['Clear Communication','Decisiveness','Democracy','Ethical Practice','Honesty','Independence','Integrity','Open and Honest','Self-Motivation','Self-Respect','Truth','Working Alone']
+    .map(label => ({ label, cat: 'CHARACTER' })),
+  ...['Economic Security','Financial Gain','Freedom','Personal Growth','Time Freedom','Humour','Money','Nature','Pleasure','Privacy','Security','Serenity','Stability','Wealth']
+    .map(label => ({ label, cat: 'WELL-BEING' })),
+  ...['Effectiveness','Helping Society','Influencing Others','Leadership','Market Position','Meaningful Work','Power and Authority','Public Service']
+    .map(label => ({ label, cat: 'PURPOSE & IMPACT' })),
+].map((v, i) => ({ id: i, ...v }));
+
+const MIN_SELECT = 20;
+const MAX_SELECT = 25;
+
+/* =========================================================
+   STATE
+   ========================================================= */
+function shuffle(arr){
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+function buildPairs(){
+  const pairs = [];
+  for (let i = 0; i < CATEGORY_ORDER.length; i++){
+    for (let j = i + 1; j < CATEGORY_ORDER.length; j++){
+      pairs.push([CATEGORY_ORDER[i], CATEGORY_ORDER[j]]);
+    }
+  }
+  return pairs;
+}
+
+const state = {
+  screen: 'intro',
+  shuffledValues: shuffle(VALUES),
+  selected: new Set(),
+  search: '',
+  pairs: buildPairs(),
+  compareIndex: 0,
+  winners: {},
+  emailSubmitted: false,
+};
+
+/* =========================================================
+   WHEEL GEOMETRY
+   ========================================================= */
+function polarToCartesian(cx, cy, r, angleDeg){
+  const rad = angleDeg * Math.PI / 180;
+  return { x: cx + r * Math.sin(rad), y: cy - r * Math.cos(rad) };
+}
+function wedgePath(cx, cy, r, startAngle, endAngle){
+  if (r <= 0.5) return '';
+  const p1 = polarToCartesian(cx, cy, r, startAngle);
+  const p2 = polarToCartesian(cx, cy, r, endAngle);
+  const largeArc = (endAngle - startAngle) > 180 ? 1 : 0;
+  return `M ${cx} ${cy} L ${p1.x.toFixed(2)} ${p1.y.toFixed(2)} A ${r} ${r} 0 ${largeArc} 1 ${p2.x.toFixed(2)} ${p2.y.toFixed(2)} Z`;
+}
+function renderWheel(radii, opts){
+  const size = 300, cx = size / 2, cy = size / 2, maxR = 128, gap = 3;
+  const step = 360 / CATEGORY_ORDER.length;
+  let svg = `<svg viewBox="0 0 ${size} ${size}" width="100%" style="max-width:280px;height:auto;">`;
+  svg += `<circle cx="${cx}" cy="${cy}" r="${maxR}" fill="none" stroke="#E3D9C4" stroke-width="1" stroke-dasharray="2,4"/>`;
+  CATEGORY_ORDER.forEach((cat, i) => {
+    const start = i * step + gap, end = (i + 1) * step - gap;
+    const r = radii[cat] || 4;
+    const d = wedgePath(cx, cy, Math.max(r, 4), start, end);
+    svg += `<path d="${d}" fill="${CATEGORY_META[cat].color}" opacity="${opts && opts.dim ? 0.85 : 1}"/>`;
+    if (opts && opts.labels && opts.labels[cat] !== undefined){
+      const mid = (start + end) / 2;
+      const lp = polarToCartesian(cx, cy, Math.max(r, 4) + 16, mid);
+      svg += `<text x="${lp.x.toFixed(1)}" y="${lp.y.toFixed(1)}" text-anchor="middle" dominant-baseline="middle" font-family="IBM Plex Sans, sans-serif" font-size="13" font-weight="600" fill="#26231D">${opts.labels[cat]}</text>`;
+    }
+  });
+  svg += `<circle cx="${cx}" cy="${cy}" r="26" fill="#FAF6EE" stroke="#E3D9C4" stroke-width="1"/>`;
+  svg += `</svg>`;
+  return svg;
+}
+
+/* =========================================================
+   DERIVED DATA
+   ========================================================= */
+function selectionsByCategory(){
+  const out = {}; CATEGORY_ORDER.forEach(c => out[c] = []);
+  state.selected.forEach(id => { const v = VALUES[id]; out[v.cat].push(v.label); });
+  return out;
+}
+function percentagesByCategory(){
+  const byCat = selectionsByCategory(); const out = {};
+  CATEGORY_ORDER.forEach(c => { const count = byCat[c].length; out[c] = { count, pct: Math.round((count / CATEGORY_META[c].total) * 100) }; });
+  return out;
+}
+function winCounts(){
+  const wins = {}; CATEGORY_ORDER.forEach(c => wins[c] = 0);
+  Object.values(state.winners).forEach(w => { if (wins[w] !== undefined) wins[w]++; });
+  return wins;
+}
+function headToHeadWinner(a, b){
+  const k1 = a + '||' + b, k2 = b + '||' + a;
+  return state.winners[k1] || state.winners[k2];
+}
+function statedRanking(){
+  const wins = winCounts();
+  return CATEGORY_ORDER.slice().sort((a, b) => {
+    if (wins[b] !== wins[a]) return wins[b] - wins[a];
+    const h2h = headToHeadWinner(a, b);
+    if (h2h === a) return -1;
+    if (h2h === b) return 1;
+    return 0;
+  });
+}
+function revealedRanking(){
+  const pcts = percentagesByCategory();
+  return CATEGORY_ORDER.slice().sort((a, b) => pcts[b].pct !== pcts[a].pct ? pcts[b].pct - pcts[a].pct : pcts[b].count - pcts[a].count);
+}
+function buildInsight(){
+  const stated = statedRanking(), revealed = revealedRanking(), pcts = percentagesByCategory();
+  const topStated = stated[0], topRevealed = revealed[0];
+  if (topStated === topRevealed){
+    return `Your picks and your instincts agree: <strong>${topStated}</strong> led both the words you chose (${pcts[topStated].pct}% of that category) and the head-to-head ranking. That's a strong, consistent signal.`;
+  }
+  return `You selected the most words under <strong>${topRevealed}</strong> (${pcts[topRevealed].pct}% of that category), but when it came to choosing head-to-head, <strong>${topStated}</strong> won out as most important. Worth sitting with that gap &mdash; sometimes what we reach for and what we say matters most aren't quite the same thing.`;
+}
+
+/* =========================================================
+   RENDER: SCREENS
+   ========================================================= */
+function stepIndex(){ return { intro:0, select:1, reveal:2, compare:3, results:4 }[state.screen]; }
+
+function renderTopbar(){
+  const idx = stepIndex();
+  const ticks = ['Start','Select','Map','Compare','Result'].map((_, i) => {
+    const color = i < idx ? '#C9982F' : (i === idx ? '#26231D' : '#E3D9C4');
+    return `<div class="step-tick" style="background:${color};"></div>`;
+  }).join('');
+  return `
+    <div class="topbar">
+      <div class="brandmark">Core Values Compass</div>
+      <div class="steps">${ticks}</div>
+    </div>`;
+}
+
+function renderIntro(){
+  return `
+    <div class="eyebrow">01 &middot; Before you begin</div>
+    <h1 class="display">Find out what you're actually optimizing for.</h1>
+    <p class="lead">You'll pick 20&ndash;25 words that describe what matters most to you, see how they group into five themes, then make a series of head-to-head calls to find out which theme actually wins when they compete.</p>
+    <ul class="intro-list">
+      <li><span class="intro-num">1</span><span>Choose 20&ndash;25 words from a shuffled list of 60. Take your time &mdash; there's no wrong answer.</span></li>
+      <li><span class="intro-num">2</span><span>See how your picks map across five themes.</span></li>
+      <li><span class="intro-num">3</span><span>Make 10 quick head-to-head calls between the themes.</span></li>
+      <li><span class="intro-num">4</span><span>Get your ranked result &mdash; and where it disagrees with your first instinct.</span></li>
+    </ul>
+    <button class="btn" onclick="go('select')">Begin &rarr;</button>
+  `;
+}
+
+function renderSelect(){
+  const q = state.search.trim().toLowerCase();
+  const list = state.shuffledValues.filter(v => !q || v.label.toLowerCase().includes(q));
+  const count = state.selected.size;
+  const atMax = count >= MAX_SELECT;
+  const canContinue = count >= MIN_SELECT;
+
+  const chips = list.map(v => {
+    const isSel = state.selected.has(v.id);
+    const disabledLook = (!isSel && atMax) ? ' disabled-add' : '';
+    return `<button class="chip${isSel ? ' selected' : ''}${disabledLook}" onclick="toggleValue(${v.id})">${v.label}</button>`;
+  }).join('');
+
+  return `
+    <div class="eyebrow">02 &middot; Select</div>
+    <h2>Choose the words that describe what matters most.</h2>
+    <p class="lead">No categories shown on purpose &mdash; pick by feel, not by theme.</p>
+    <input class="search-input" type="text" placeholder="Filter the list&hellip;" value="${escapeAttr(state.search)}" oninput="onSearch(this.value)" />
+    <div class="counter"><strong>${count}</strong> of 20&ndash;25 selected${atMax ? " &mdash; that's the max, remove one to add another" : ''}</div>
+    <div class="chip-grid">${chips}</div>
+    <div class="sticky-footer row-between">
+      <button class="btn-text" onclick="go('intro')">&larr; Back</button>
+      <button class="btn" ${canContinue ? '' : 'disabled'} onclick="finishSelecting()">See your map &rarr;</button>
+    </div>
+  `;
+}
+
+function renderReveal(){
+  const pcts = percentagesByCategory();
+  const byCat = selectionsByCategory();
+  const ranked = revealedRanking();
+  const radii = {};
+  CATEGORY_ORDER.forEach(c => { radii[c] = 20 + (pcts[c].pct / 100) * 108; });
+  const wheel = renderWheel(radii, {});
+
+  const legend = ranked.map(cat => {
+    const meta = CATEGORY_META[cat];
+    const { count, pct } = pcts[cat];
+    const words = byCat[cat];
+    const wordStr = words.length ? words.slice(0, 6).join(', ') + (words.length > 6 ? ` +${words.length - 6} more` : '') : 'None selected';
+    return `
+      <div class="legend-row">
+        <div class="legend-head">
+          <div class="legend-dot" style="background:${meta.color}"></div>
+          <div class="legend-name">${cat}</div>
+          <div class="legend-stat">${count}/${meta.total} &middot; ${pct}%</div>
+        </div>
+        <div class="legend-bar-track"><div class="legend-bar-fill" style="width:${pct}%;background:${meta.color}"></div></div>
+        <div class="legend-words">${wordStr}</div>
+      </div>`;
+  }).join('');
+
+  return `
+    <div class="eyebrow">03 &middot; Your map</div>
+    <h2>Here's how your ${state.selected.size} words group up.</h2>
+    <p class="lead">Sized by the share of each theme you selected &mdash; this is what you reached for.</p>
+    <div class="wheel-wrap">${wheel}</div>
+    <div class="legend">${legend}</div>
+    <div class="row-between">
+      <button class="btn-ghost" onclick="go('select')">&larr; Back</button>
+      <button class="btn" onclick="startCompare()">Rank them head-to-head &rarr;</button>
+    </div>
+  `;
+}
+
+function renderCompare(){
+  const [a, b] = state.pairs[state.compareIndex];
+  const byCat = selectionsByCategory();
+  const wordsFor = (cat) => {
+    const words = byCat[cat];
+    return words.length ? words.slice(0, 5).join(', ') + (words.length > 5 ? ` +${words.length - 5} more` : '') : "You didn't select any words here.";
+  };
+  return `
+    <div class="eyebrow">04 &middot; Head-to-head</div>
+    <div class="compare-progress">Comparison ${state.compareIndex + 1} of ${state.pairs.length}</div>
+    <h2 class="compare-q">Which matters more to you?</h2>
+    <div class="vs-wrap">
+      <button class="vs-card" style="--card-color:${CATEGORY_META[a].color}" onclick="pickWinner('${a}','${b}')">
+        <div class="vs-card-name">${a}</div>
+        <div class="vs-card-words">${wordsFor(a)}</div>
+      </button>
+      <div class="vs-divider">vs</div>
+      <button class="vs-card" style="--card-color:${CATEGORY_META[b].color}" onclick="pickWinner('${b}','${a}')">
+        <div class="vs-card-name">${b}</div>
+        <div class="vs-card-words">${wordsFor(b)}</div>
+      </button>
+    </div>
+  `;
+}
+
+function renderResults(){
+  const stated = statedRanking();
+  const wins = winCounts();
+  const radii = {};
+  stated.forEach((cat, i) => { radii[cat] = 128 - i * 22; });
+  const labels = {};
+  stated.forEach((cat, i) => { labels[cat] = String(i + 1); });
+  const wheel = renderWheel(radii, { labels });
+
+  const rankRows = stated.map((cat, i) => {
+    const meta = CATEGORY_META[cat];
+    return `
+      <li class="rank-row">
+        <div class="rank-num" style="--rank-color:${meta.color}">${i + 1}</div>
+        <div style="flex:1;">
+          <div class="rank-name">${cat}</div>
+          <div class="rank-sub">${wins[cat]} of 4 head-to-head wins</div>
+        </div>
+      </li>`;
+  }).join('');
+
+  const emailBlock = state.emailSubmitted ? `
+    <div class="confirm-box">
+      <div class="display">Got it.</div>
+      <p>Your full report with definitions and reflection prompts is on its way.</p>
+    </div>
+  ` : `
+    <div class="field">
+      <label for="fname">First name</label>
+      <input type="text" id="fname" placeholder="Jordan" />
+    </div>
+    <div class="field">
+      <label for="femail">Email</label>
+      <input type="email" id="femail" placeholder="jordan@company.com" />
+    </div>
+    <div class="checkbox-row">
+      <input type="checkbox" id="fconsent" checked />
+      <label for="fconsent">I'd like to receive my personalized values report and occasional insights.</label>
+    </div>
+    <div id="form-error" class="form-error" style="display:none;"></div>
+    <button class="btn" id="submit-btn" style="width:100%;justify-content:center;" onclick="submitEmail()">Get your full report</button>
+  `;
+
+  return `
+    <div class="eyebrow">05 &middot; Result</div>
+    <h2>Your core values, ranked.</h2>
+    <div class="wheel-wrap">${wheel}</div>
+    <ul class="rank-list">${rankRows}</ul>
+    <div class="insight-box">
+      <div class="eyebrow">The gap worth noticing</div>
+      ${buildInsight()}
+    </div>
+    <div class="email-card">${emailBlock}</div>
+    <div style="text-align:center;margin-top:24px;">
+      <button class="btn-ghost" onclick="restart()">Start over</button>
+    </div>
+    <div class="footer-credit">A tool by FSC Group</div>
+  `;
+}
+
+/* =========================================================
+   MAIN RENDER
+   ========================================================= */
+function render(){
+  const app = document.getElementById('app');
+  let body = '';
+  switch (state.screen){
+    case 'intro': body = renderIntro(); break;
+    case 'select': body = renderSelect(); break;
+    case 'reveal': body = renderReveal(); break;
+    case 'compare': body = renderCompare(); break;
+    case 'results': body = renderResults(); break;
+  }
+  app.innerHTML = renderTopbar() + body;
+  if (state.screen !== 'select'){
+    window.scrollTo({ top: 0, behavior: 'auto' });
+  }
+}
+function escapeAttr(s){ return String(s).replace(/"/g, '&quot;'); }
+
+/* =========================================================
+   ACTIONS
+   ========================================================= */
+function go(screen){ state.screen = screen; render(); }
+
+function toggleValue(id){
+  if (state.selected.has(id)){
+    state.selected.delete(id);
+  } else {
+    if (state.selected.size >= MAX_SELECT) return;
+    state.selected.add(id);
+  }
+  render();
+}
+function onSearch(val){
+  const input = document.activeElement;
+  const caret = input && input.id !== undefined ? input.selectionStart : null;
+  state.search = val;
+  render();
+  const newInput = document.querySelector('.search-input');
+  if (newInput && caret !== null){ newInput.focus(); newInput.setSelectionRange(caret, caret); }
+}
+function finishSelecting(){
+  if (state.selected.size < MIN_SELECT) return;
+  go('reveal');
+}
+function startCompare(){
+  state.compareIndex = 0;
+  state.winners = {};
+  go('compare');
+}
+function pickWinner(winner, loser){
+  state.winners[winner + '||' + loser] = winner;
+  if (state.compareIndex < state.pairs.length - 1){
+    state.compareIndex++;
+    render();
+  } else {
+    go('results');
+  }
+}
+function showFormError(msg){
+  const el = document.getElementById('form-error');
+  if (!el) return;
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+function submitEmail(){
+  const email = document.getElementById('femail').value.trim();
+  const consent = document.getElementById('fconsent').checked;
+  if (!email || !email.includes('@')){ showFormError('Enter a valid email address.'); return; }
+  if (!consent){ showFormError('Check the box to receive your report.'); return; }
+  state.emailSubmitted = true;
+  render();
+}
+function restart(){
+  state.screen = 'intro';
+  state.shuffledValues = shuffle(VALUES);
+  state.selected = new Set();
+  state.search = '';
+  state.compareIndex = 0;
+  state.winners = {};
+  state.emailSubmitted = false;
+  render();
+}
+
+render();
+</script>
+</body>
+</html>
