@@ -128,17 +128,7 @@
   .insight-box{ background: var(--white); border-left:3px solid var(--brass); border-radius:6px; padding:18px 20px; font-size:14px; margin-bottom:34px; }
   .insight-box .eyebrow{ margin-bottom:8px; }
 
-  .email-card{ background: var(--white); border:1px solid var(--line); border-radius:14px; padding:26px; }
-  .field{ margin-bottom:14px; }
-  .field label{ display:block; font-size:12.5px; color: var(--muted-2); margin-bottom:6px; }
-  .field input{ width:100%; background: var(--bg); border:1px solid var(--line); color: var(--ink); padding:11px 13px; border-radius:7px; font-size:14px; box-sizing:border-box; }
-  .checkbox-row{ display:flex; align-items:flex-start; gap:10px; margin:16px 0 6px; }
-  .checkbox-row input{ margin-top:3px; }
-  .checkbox-row label{ font-size:12.5px; color: var(--muted-2); line-height:1.5; }
-  .form-error{ color: var(--error); font-size:12.5px; margin:6px 0 14px; }
-  .confirm-box{ text-align:center; padding:10px 0; }
-  .confirm-box .display{ font-size:20px; margin-bottom:8px; color: var(--ink-strong); }
-  .confirm-box p{ color: var(--muted); font-size:13.5px; margin:0; }
+  .email-card{ background: var(--white); border:1px solid var(--line); border-radius:14px; padding:18px; }
 
   .footer-credit{ text-align:center; margin-top:44px; font-size:11px; color: var(--footer); letter-spacing:0.08em; text-transform:uppercase; }
 
@@ -147,6 +137,7 @@
 </head>
 <body>
 <div id="app"></div>
+<script src="https://link.msgsndr.com/js/form_embed.js"></script>
 
 <script>
 /* =========================================================
@@ -206,7 +197,6 @@ const state = {
   pairs: buildPairs(),
   compareIndex: 0,
   winners: {},
-  emailSubmitted: false,
 };
 
 /* =========================================================
@@ -433,26 +423,26 @@ function renderResults(){
       </li>`;
   }).join('');
 
-  const emailBlock = state.emailSubmitted ? `
-    <div class="confirm-box">
-      <div class="display">Got it.</div>
-      <p>Your full report with definitions and reflection prompts is on its way.</p>
-    </div>
-  ` : `
-    <div class="field">
-      <label for="fname">First name</label>
-      <input type="text" id="fname" placeholder="Jordan" />
-    </div>
-    <div class="field">
-      <label for="femail">Email</label>
-      <input type="email" id="femail" placeholder="jordan@company.com" />
-    </div>
-    <div class="checkbox-row">
-      <input type="checkbox" id="fconsent" checked />
-      <label for="fconsent">I'd like to receive my personalized values report and occasional insights.</label>
-    </div>
-    <div id="form-error" class="form-error" style="display:none;"></div>
-    <button class="btn" id="submit-btn" style="width:100%;justify-content:center;" onclick="submitEmail()">Get your full report</button>
+  const leadForm = `
+    <iframe
+      src="https://api.leadconnectorhq.com/widget/form/Xn4dKcHq65pEk3TXVCC7"
+      style="width:100%;height:100%;min-height:434px;border:none;border-radius:8px"
+      id="inline-Xn4dKcHq65pEk3TXVCC7"
+      data-layout="{'id':'INLINE'}"
+      data-trigger-type="alwaysShow"
+      data-trigger-value=""
+      data-activation-type="alwaysActivated"
+      data-activation-value=""
+      data-deactivation-type="neverDeactivate"
+      data-deactivation-value=""
+      data-form-name="Simple Submission Form"
+      data-height="undefined"
+      data-layout-iframe-id="inline-Xn4dKcHq65pEk3TXVCC7"
+      data-form-id="Xn4dKcHq65pEk3TXVCC7"
+      data-cookie-consent="true"
+      data-cookie-consent-provider="ghl_cookie"
+      title="Simple Submission Form"
+    ></iframe>
   `;
 
   return `
@@ -464,7 +454,7 @@ function renderResults(){
       <div class="eyebrow">The gap worth noticing</div>
       ${buildInsight()}
     </div>
-    <div class="email-card">${emailBlock}</div>
+    <div class="email-card">${leadForm}</div>
     <div style="text-align:center;margin-top:24px;">
       <button class="btn-ghost" onclick="restart()">Start over</button>
     </div>
@@ -532,20 +522,6 @@ function pickWinner(winner, loser){
     go('results');
   }
 }
-function showFormError(msg){
-  const el = document.getElementById('form-error');
-  if (!el) return;
-  el.textContent = msg;
-  el.style.display = 'block';
-}
-function submitEmail(){
-  const email = document.getElementById('femail').value.trim();
-  const consent = document.getElementById('fconsent').checked;
-  if (!email || !email.includes('@')){ showFormError('Enter a valid email address.'); return; }
-  if (!consent){ showFormError('Check the box to receive your report.'); return; }
-  state.emailSubmitted = true;
-  render();
-}
 function restart(){
   state.screen = 'intro';
   state.shuffledValues = shuffle(VALUES);
@@ -553,7 +529,6 @@ function restart(){
   state.search = '';
   state.compareIndex = 0;
   state.winners = {};
-  state.emailSubmitted = false;
   render();
 }
 
